@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Urinalysis Sediment Learning Model v3.0</title>
+    <title>Urinalysis Sediment Coach v8.5</title>
     <style>
         /* --- CSS Styles --- */
         :root {
             --primary-color: #0056b3;
-            --secondary-color: #f39c12;
+            --junior-color: #28a745;   /* Green */
+            --advanced-color: #d63384; /* Pink */
+            --quiz-color: #e67e22;     /* Orange */
             --bg-color: #f4f7f6;
             --card-bg: #ffffff;
-            --success-color: #28a745;
-            --error-color: #dc3545;
             --text-color: #333;
         }
 
@@ -20,10 +20,10 @@
         body { background-color: var(--bg-color); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
         .app-container {
-            background: var(--card-bg); width: 100%; max-width: 800px;
+            background: var(--card-bg); width: 100%; max-width: 900px;
             border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             overflow: hidden; display: flex; flex-direction: column;
-            position: relative; min-height: 700px;
+            position: relative; min-height: 850px;
         }
 
         /* Screen Visibility */
@@ -32,117 +32,195 @@
 
         /* Start Screen */
         #start-screen {
-            padding: 40px; text-align: center; justify-content: center; align-items: center;
+            padding: 30px; text-align: center; justify-content: flex-start; align-items: center;
             background: linear-gradient(135deg, #ffffff 0%, #eef2f3 100%);
+            overflow-y: auto;
         }
-        .title-area h1 { color: var(--primary-color); margin-bottom: 10px; font-size: 2.2rem; }
-        .intro-box {
-            background: #fff; border: 1px solid #eee; border-radius: 10px;
-            padding: 20px; margin-bottom: 30px; max-width: 500px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: left; line-height: 1.6;
+        .title-area { margin-bottom: 25px; margin-top: 20px; }
+        .title-area h1 { color: var(--primary-color); margin-bottom: 5px; font-size: 2.2rem; }
+        
+        .mode-selection {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; margin-bottom: 30px;
         }
-        .start-btn {
-            padding: 15px 50px; font-size: 1.2rem; background: var(--primary-color);
-            color: white; border: none; border-radius: 50px; cursor: pointer;
-            transition: transform 0.2s; box-shadow: 0 5px 15px rgba(0,86,179,0.3);
+        .mode-card {
+            background: white; border: 2px solid #eee; border-radius: 15px; padding: 20px;
+            cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
         }
-        .start-btn:hover { transform: translateY(-3px); background: #004494; }
-        .author-info { margin-top: 40px; font-size: 0.9rem; color: #555; border-top: 1px solid #ddd; padding-top: 20px; width: 100%; }
+        .mode-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .mode-card.junior:hover { border-color: var(--junior-color); }
+        .mode-card.advanced:hover { border-color: var(--advanced-color); }
+        .mode-card.quiz:hover { border-color: var(--quiz-color); }
+
+        .mode-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .mode-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 8px; }
+        .mode-desc { font-size: 0.85rem; color: #666; line-height: 1.4; }
+        
+        .mode-card.junior .mode-title { color: var(--junior-color); }
+        .mode-card.advanced .mode-title { color: var(--advanced-color); }
+        .mode-card.quiz .mode-title { color: var(--quiz-color); }
+
+        /* --- Footer & Copyright Area --- */
+        .footer-area {
+            margin-top: auto;
+            width: 100%;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+            padding-bottom: 10px;
+        }
+        
+        .author-name {
+            font-size: 1.1rem; color: var(--primary-color); font-weight: bold; margin-bottom: 5px;
+        }
+        .author-dept {
+            font-size: 0.95rem; color: #444; margin-bottom: 15px; line-height: 1.4;
+        }
+        .author-dept-en {
+            font-size: 0.85rem; color: #666; display: block; margin-top: 2px;
+        }
+
+        .copyright-box {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.5;
+            text-align: left;
+            margin-top: 10px;
+        }
+        .copyright-box p { margin: 5px 0; }
+        /* ------------------------------- */
 
         /* Game Interface */
-        .header { padding: 20px 30px; background: #fff; border-bottom: 1px solid #eee; }
-        .header-top { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; color: var(--primary-color); }
+        .header { padding: 15px 30px; background: #fff; border-bottom: 1px solid #eee; }
+        .header-top { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; }
+        .mode-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: white; vertical-align: middle; margin-right: 5px; font-weight: normal;}
+        
         .progress-track { width: 100%; height: 8px; background-color: #e9ecef; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background-color: var(--secondary-color); width: 0%; transition: width 0.4s ease; }
+        .progress-fill { height: 100%; width: 0%; transition: width 0.4s ease; background-color: var(--primary-color); }
 
-        .game-content { padding: 30px; text-align: center; flex-grow: 1; overflow-y: auto; }
+        .game-content { padding: 20px; text-align: center; flex-grow: 1; overflow-y: auto; }
 
-        /* Microscope Lens & Image Handling */
+        /* Microscope Lens (Full View) */
         .microscope-lens {
-            width: 300px; height: 300px; /* Increased size for better view */
+            width: 100%;
+            max-width: 600px; 
+            height: 400px;
             background-color: #000;
-            border-radius: 50%; border: 8px solid #dcdcdc;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-            margin: 0 auto 25px auto; overflow: hidden; position: relative;
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin: 0 auto 20px auto;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .microscope-lens img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .img-error-msg { position: absolute; text-align: center; padding: 20px; font-size: 0.9rem; color: #ff6b6b; display: none; width: 100%; top: 50%; transform: translateY(-50%); }
+
+        .question-text { 
+            font-size: 1.1rem; color: var(--text-color); margin-bottom: 20px; font-weight: 600; min-height: 70px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: #fff; flex-shrink: 0;
         }
-        
-        /* The Actual Image */
-        .microscope-lens img {
-            width: 100%; height: 100%; object-fit: cover;
-            display: block; /* Ensure it's visible */
-        }
-        
-        /* Error message if image is missing */
-        .img-error-msg {
-            position: absolute; text-align: center; padding: 20px;
-            font-size: 0.9rem; color: #ff6b6b; display: none;
+        .lab-data-tag {
+            background: #f0f4f8; border: 1px solid #dceefb; color: #0056b3; 
+            padding: 5px 12px; border-radius: 6px; font-size: 0.9rem; margin-top: 8px; font-family: monospace;
         }
 
-        .question-text { font-size: 1.3rem; color: var(--text-color); margin-bottom: 25px; font-weight: 600; }
-        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .option-btn {
-            padding: 15px; background: #fff; border: 2px solid #e0e0e0; border-radius: 10px;
-            font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s; color: #444; word-wrap: break-word;
+            padding: 12px; background: #fff; border: 2px solid #e0e0e0; border-radius: 10px;
+            font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s; color: #444; word-wrap: break-word;
         }
         .option-btn:hover:not(:disabled) { border-color: var(--primary-color); color: var(--primary-color); background: #f8fbff; }
-        .option-btn.correct { background-color: #d4edda !important; border-color: var(--success-color) !important; color: #155724 !important; }
-        .option-btn.wrong { background-color: #f8d7da !important; border-color: var(--error-color) !important; color: #721c24 !important; opacity: 0.6; }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; opacity: 0.6; }
 
         .feedback-panel {
-            margin-top: 25px; padding: 20px; border-radius: 10px; text-align: left; display: none;
-            background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404; animation: fadeIn 0.3s;
+            margin-top: 20px; padding: 15px; border-radius: 10px; text-align: left; display: none;
+            background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404; animation: fadeIn 0.3s; font-size: 0.95rem;
         }
-        .feedback-panel.success { background-color: #d4edda; border-left-color: var(--success-color); color: #155724; }
-        .feedback-panel.error { background-color: #f8d7da; border-left-color: var(--error-color); color: #721c24; }
+        .feedback-panel.success { background-color: #d4edda; border-left-color: #28a745; color: #155724; }
+        .feedback-panel.error { background-color: #f8d7da; border-left-color: #dc3545; color: #721c24; }
 
         .next-btn {
             margin-top: 20px; padding: 12px; width: 100%; background: var(--primary-color); color: white;
             border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; display: none;
         }
 
-        /* Result Screen */
-        #result-screen { display: none; padding: 50px; text-align: center; justify-content: center; align-items: center; }
-        .score-display-large { font-size: 4rem; font-weight: bold; color: var(--primary-color); margin: 20px 0; }
+        #result-screen { display: none; padding: 40px; text-align: center; justify-content: center; align-items: center; }
+        .score-circle { 
+            width: 140px; height: 140px; border-radius: 50%; background: var(--primary-color); color: white;
+            display: flex; justify-content: center; align-items: center; font-size: 3.5rem; font-weight: bold; margin: 20px auto;
+        }
+        .home-btn { 
+            margin-top: 10px; background: transparent; color: #666; border: 1px solid #ccc; padding: 10px 30px; border-radius: 50px; cursor: pointer;
+        }
+        .home-btn:hover { background: #eee; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } .start-screen { padding: 20px; } .microscope-lens { width: 250px; height: 250px; } }
+        @media (max-width: 700px) { 
+            .mode-selection { grid-template-columns: 1fr; } 
+            .options-grid { grid-template-columns: 1fr; }
+            .microscope-lens { height: 300px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        
         <div id="start-screen" class="screen active">
             <div class="title-area">
-                <h1>尿液沉渣鏡檢學習模型</h1>
-                <h2>Urinalysis Sediment Learning Model <span style="font-size:0.8em; background:#333; color:#fff; padding:2px 6px; border-radius:4px;">Ver 3.0</span></h2>
+                <h1>尿液沉渣鏡檢教練</h1>
+                <h2>Urinalysis Sediment Coach <span style="font-size:0.7em; background:#333; color:#fff; padding:2px 6px; border-radius:4px;">v8.5</span></h2>
             </div>
-            <div class="intro-box">
-                <h3 style="margin-top:0;">📖 學習指引</h3>
-                <p>歡迎來到虛擬鏡檢實驗室。每次測驗將從資料庫中<strong>隨機抽取 10 題</strong>進行考核。</p>
-                <ul>
-                    <li><strong>題庫總數：</strong> 25 題。</li>
-                    <li><strong>測驗題數：</strong> 10 題 (Random Selection)。</li>
-                    <li><strong>目標：</strong> 爭取獲得「顯微鏡大師」稱號。</li>
-                </ul>
-                <p style="font-size:0.9em; color:#666;">(Please select the correct English term for the sediment shown)</p>
+            
+            <p style="margin-bottom: 20px; color: #555;">請選擇模式 (Select Mode)：</p>
+
+            <div class="mode-selection">
+                <div class="mode-card junior" onclick="startGame('junior')">
+                    <span class="mode-icon">🔰</span>
+                    <span class="mode-title">初級教練</span>
+                    <span class="mode-desc">基礎題庫 (全做)</span>
+                </div>
+                <div class="mode-card advanced" onclick="startGame('advanced')">
+                    <span class="mode-icon">🔥</span>
+                    <span class="mode-title">進階教練</span>
+                    <span class="mode-desc">隨機抽 20 題</span>
+                </div>
+                <div class="mode-card quiz" onclick="startGame('quiz')">
+                    <span class="mode-icon">📝</span>
+                    <span class="mode-title">測試一下</span>
+                    <span class="mode-desc" style="color:#e67e22; font-weight:bold;">混合抽題 (無提示)</span>
+                </div>
             </div>
-            <button class="start-btn" id="btn-start">開始隨機測驗 (Start)</button>
-            <div class="author-info">
-                <p>設計與開發：</p>
-                <strong>張昱維 助理教授</strong><br>
-                中山醫學大學 醫學檢驗暨生物技術學系<br>
-                <span style="font-size:0.85em; color:#888;">Department of Medical Laboratory Science and Biotechnology, CSMU</span>
+
+            <div class="footer-area">
+                <div class="author-name">張昱維 助理教授</div>
+                <div class="author-dept">
+                    中山醫學大學 醫學檢驗暨生物技術學系<br>
+                    <span class="author-dept-en">Department of Medical Laboratory and Biotechnology, CSMU</span>
+                </div>
+                
+                <div class="copyright-box">
+                    <p>本訓練器是由張昱維助理教授收集自指定教科書及專業網站圖譜，配合 Gemini 3.0 Pro LLM 協作生成。</p>
+                    <p>供修習本學期臨床鏡檢學(含實驗課)之中山醫學大學醫技系同學以學習目使用之，純教育用途，無營利與商轉目的，亦請使用者勿轉作其他用途，以免觸法。</p>
+                    <p>如有任何問題，請與專業教師討論諮詢，並請參考正版教科書說明內容。</p>
+                </div>
             </div>
         </div>
 
         <div id="game-interface" class="screen">
             <div class="header">
                 <div class="header-top">
-                    <span id="progress-text">Question 1 / 10</span>
-                    <span id="score-text">Score: 0</span>
+                    <div>
+                        <span id="mode-badge" class="mode-badge">Mode</span>
+                        <span id="progress-text">Q 1 / 10</span>
+                    </div>
+                    <span id="score-text" style="color:var(--primary-color);">Score: 0</span>
                 </div>
                 <div class="progress-track">
                     <div class="progress-fill" id="progress-bar"></div>
@@ -152,13 +230,10 @@
             <div class="game-content">
                 <div class="microscope-lens">
                     <img id="question-image" src="" alt="Microscope View" onerror="handleImageError(this)">
-                    <div id="error-msg" class="img-error-msg">
-                        ⚠️ Image Not Found<br>
-                        <span id="missing-filename" style="font-size:0.8em"></span>
-                    </div>
+                    <div id="error-msg" class="img-error-msg">⚠️ Image Not Found<br><span id="missing-filename" style="font-size:0.8em; color:#fff;"></span></div>
                 </div>
 
-                <div class="question-text" id="question-text">Loading...</div>
+                <div class="question-text" id="question-text"></div>
                 <div class="options-grid" id="options-container"></div>
                 <div id="feedback-panel" class="feedback-panel"></div>
                 <button id="next-btn" class="next-btn" onclick="nextQuestion()">Next Question ➔</button>
@@ -166,64 +241,75 @@
         </div>
 
         <div id="result-screen" class="screen">
-            <h2>測驗結束 (Completed)</h2>
-            <p>本輪 10 題總得分：</p>
-            <div class="score-display-large" id="final-score">0</div>
-            <h3 id="final-rank" style="color:var(--primary-color);">Rank Loading...</h3>
-            <p id="final-comment" style="color:#555; max-width: 400px; margin: 0 auto 30px auto;"></p>
-            <button class="start-btn" onclick="restartGame()">再抽 10 題 (New Round)</button>
+            <h2 id="result-title">結算</h2>
+            <div class="score-circle" id="final-score">0</div>
+            <h3 id="final-rank" style="color:var(--primary-color); margin: 10px 0;">Rank</h3>
+            <p id="final-comment" style="color:#555; max-width: 400px; margin: 0 auto 30px auto; line-height: 1.5;"></p>
+            <button class="next-btn" style="display:inline-block; width:auto; padding: 12px 40px; margin-bottom:10px;" onclick="restartGame()">再來一局 (Replay)</button><br>
+            <button class="home-btn" onclick="goHome()">回首頁 (Home)</button>
         </div>
-
     </div>
 
     <script>
-        // --- DATA POOL: Ensure your 'images' folder has these EXACT filenames ---
-        const questionPool = [
-            // Cells
-            { "id": "q01", "image_file": "images/q01_rbc.jpg", "question": "【400x】視野中可見雙凹圓盤狀、無細胞核且邊緣平滑的細胞。", "options": ["Red Blood Cell (RBC)", "White Blood Cell (WBC)", "Yeast", "Air Bubble"], "correct_index": 0, "explanation": "<strong>RBC</strong>：無核、雙凹圓盤狀。在高比重尿中可能皺縮 (Crenated)。" },
-            { "id": "q02", "image_file": "images/q02_wbc.jpg", "question": "【400x】細胞比紅血球稍大，質內有顆粒，依稀可見分葉核。", "options": ["Renal Tubular Epithelial Cell", "White Blood Cell (WBC)", "Squamous Epithelial Cell", "Trichomonas"], "correct_index": 1, "explanation": "<strong>WBC</strong>：主要為嗜中性球，具有顆粒性細胞質與分葉核。" },
-            { "id": "q03", "image_file": "images/q03_sq_epi.jpg", "question": "【400x】體積巨大、形狀不規則且細胞核小的扁平細胞。", "options": ["Urothelial Cell", "Mucus", "Squamous Epithelial Cell", "Hyaline Cast"], "correct_index": 2, "explanation": "<strong>Squamous Epithelial Cell</strong>：來自尿道口或陰道，體積最大，通常無病理意義。" },
-            { "id": "q04", "image_file": "images/q04_rte.jpg", "question": "【400x】圓形或多邊形細胞，比 WBC 大，具有偏心圓核 (Eccentric nucleus)。", "options": ["White Blood Cell", "Renal Tubular Epithelial Cell", "Urothelial Cell", "Squamous Epithelial Cell"], "correct_index": 1, "explanation": "<strong>Renal Tubular Epithelial Cell (RTE)</strong>：來自腎小管，出現代表腎小管損傷 (ATN)，臨床意義重大。" },
-            { "id": "q05", "image_file": "images/q05_urothelial.jpg", "question": "【400x】呈梨形 (Pear-shaped)、尾狀 (Caudate) 或圓形的細胞，核位於中央。", "options": ["Squamous Epithelial Cell", "Urothelial (Transitional) Cell", "Renal Tubular Epithelial Cell", "WBC"], "correct_index": 1, "explanation": "<strong>Urothelial Cell</strong>：來自腎盂、輸尿管或膀胱。大量出現可能與發炎或導尿有關。" },
-            
-            // Microorganisms
-            { "id": "q06", "image_file": "images/q06_yeast.jpg", "question": "【400x】橢圓形細胞，大小不均一，具「出芽 (Budding)」特徵。", "options": ["Calcium Oxalate", "RBC", "Yeast", "Amorphous Urates"], "correct_index": 2, "explanation": "<strong>Yeast</strong>：常見白色念珠菌，特徵是出芽生殖，不溶於酸。" },
-            { "id": "q07", "image_file": "images/q07_bacteria.jpg", "question": "【400x】背景充滿微小桿狀或球狀物，具布朗運動。", "options": ["Amorphous Phosphates", "Bacteria", "Spermatozoa", "Yeast"], "correct_index": 1, "explanation": "<strong>Bacteria</strong>：若新鮮尿液中大量出現且伴隨 WBC，提示泌尿道感染。" },
-            { "id": "q08", "image_file": "images/q08_trichomonas.jpg", "question": "【400x】具鞭毛，運動方式為「急促跳動 (Jerky motion)」。", "options": ["Trichomonas vaginalis", "WBC", "Enterobius vermicularis", "Schistosoma"], "correct_index": 0, "explanation": "<strong>Trichomonas vaginalis</strong>：陰道滴蟲，需在新鮮尿液觀察其跳動才能確診。" },
-            { "id": "q09", "image_file": "images/q09_starch.jpg", "question": "【400x】有明顯折射性，多邊形或圓形，中央有裂痕 (Indentation)。偏光下呈馬耳他十字。", "options": ["Leucine", "Starch Granule", "Cholesterol", "Air Bubble"], "correct_index": 1, "explanation": "<strong>Starch Granule (澱粉)</strong>：常見汙染物（如滑石粉）。特徵是中央有「Y」字形裂痕，偏光下有 Maltese cross。" },
-            { "id": "q10", "image_file": "images/q10_mucus.jpg", "question": "【200x】細長、波浪狀、帶狀線條，折光性低。", "options": ["Hyaline Cast", "Cylindroids", "Mucus", "Fiber"], "correct_index": 2, "explanation": "<strong>Mucus</strong>：黏液絲，正常尿液常見，折光性低且邊緣不規則。" },
+        // --- 1. JUNIOR POOL ---
+        const juniorPool = [
+            { id: "j01", image_file: "images/rbc_01.jpg", options: ["RBC", "WBC", "Yeast", "Air Bubble"], correct_index: 0, question: "【400x】視野中可見雙凹圓盤狀、無細胞核且邊緣平滑的細胞。", explanation: "<strong>RBC</strong>：無核、雙凹圓盤狀。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | OB: 3+" },
+            { id: "j02", image_file: "images/wbc_01.jpg", options: ["WBC", "RBC", "RTEC", "Yeast"], correct_index: 0, question: "【400x】細胞比紅血球稍大，質內有顆粒，依稀可見分葉核。", explanation: "<strong>WBC</strong>：具顆粒性細胞質與分葉核。", stain_info: "400x / Unstained", chem_context: "pH: 7.0 | LE: 2+" },
+            { id: "j03", image_file: "images/sq_epi_01.jpg", options: ["Squamous Epithelial Cell", "Urothelial Cell", "Mucus", "Cast"], correct_index: 0, question: "【400x】體積巨大、形狀不規則的扁平細胞。", explanation: "<strong>Squamous Epi</strong>：體積最大，常見女性外陰部細胞脫落。", stain_info: "400x / Unstained", chem_context: "pH: 6.5 | Epithelial cells: 10-19/HPF" },
+            { id: "j04", image_file: "images/yeast_01.jpg", options: ["Yeast", "RBC", "CaOx", "Bacteria"], correct_index: 0, question: "【400x】橢圓形細胞，大小不均一，具「出芽」特徵。", explanation: "<strong>Yeast</strong>：出芽生殖，不溶於酸。", stain_info: "400x / Unstained", chem_context: "pH: 5.5 | Glucose: 3+" },
+            { id: "j05", image_file: "images/bacteria_01.jpg", options: ["Bacteria", "Amorphous Phos", "Sperm", "Yeast"], correct_index: 0, question: "【400x】背景充滿微小桿狀或球狀物，具布朗運動。", explanation: "<strong>Bacteria</strong>：大量出現提示感染。", stain_info: "400x / Unstained", chem_context: "pH: 7.5 | Nitrite: +" },
+            { id: "j06", image_file: "images/caox_01.jpg", options: ["Calcium Oxalate", "Uric Acid", "Triple Phos", "Cholesterol"], correct_index: 0, question: "【400x】酸性尿，折光性強，呈現「信封狀」結晶。", explanation: "<strong>Ca Oxalate</strong>：八面體信封狀。", stain_info: "400x / Unstained", chem_context: "pH: 5.5 | Clear" },
+            { id: "j07", image_file: "images/trip_phos_01.jpg", options: ["Triple Phosphate", "Ca Carbonate", "Cystine", "Tyrosine"], correct_index: 0, question: "【400x】鹼性尿，呈現「棺材蓋狀」長方形結晶。", explanation: "<strong>Triple Phosphate</strong>：磷酸銨鎂，鹼性尿常見。", stain_info: "400x / Unstained", chem_context: "pH: 8.0" },
+            { id: "j08", image_file: "images/uric_acid_01.jpg", options: ["Uric Acid", "Bilirubin", "Cystine", "Leucine"], correct_index: 0, question: "【400x】酸性尿，黃褐色，形狀多變（菱形、花狀）。", explanation: "<strong>Uric Acid</strong>：顏色偏黃，痛風常見。", stain_info: "400x / Unstained", chem_context: "pH: 5.0" },
+            { id: "j09", image_file: "images/hyaline_01.jpg", options: ["Hyaline Cast", "Granular Cast", "Waxy Cast", "Fatty Cast"], correct_index: 0, question: "【400x】非常透明、兩側平行、折光性低。", explanation: "<strong>Hyaline Cast</strong>：透明圓柱體。", stain_info: "400x / Low Light", chem_context: "pH: 6.0 | Protein: 1+" },
+            { id: "j10", image_file: "images/granular_01.jpg", options: ["Granular Cast", "WBC Cast", "RBC Cast", "Broad Cast"], correct_index: 0, question: "【400x】圓柱體基質內充滿粗大或細小顆粒。", explanation: "<strong>Granular Cast</strong>：顆粒來自細胞崩解。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | Protein: 2+" },
+            { id: "j11", image_file: "images/mucus_01.jpg", options: ["Mucus", "Hyaline Cast", "Fiber", "Cylindroid"], correct_index: 0, question: "【200x】細長、波浪狀、帶狀線條，折光性低。", explanation: "<strong>Mucus</strong>：黏液絲，邊緣不規則。", stain_info: "200x / Unstained", chem_context: "pH: 6.0" },
+            { id: "j12", image_file: "images/amorph_urates.jpg", options: ["Amorphous Urates", "Amorphous Phos", "Bacteria", "Yeast"], correct_index: 0, question: "【400x】酸性尿，肉眼看沈澱物呈粉紅色 (Brick dust)，鏡下為黃色細沙狀。", explanation: "<strong>Amorphous Urates</strong>：酸性尿無定形鹽。", stain_info: "400x / Unstained", chem_context: "pH: 5.0 | Brick Dust" },
+            { id: "j13", image_file: "images/starch_01.jpg", options: ["Starch", "Leucine", "Cholesterol", "Air Bubble"], correct_index: 0, question: "【400x】有明顯折射性，多邊形，中央有 Y 字形裂痕。", explanation: "<strong>Starch</strong>：澱粉顆粒（滑石粉）。", stain_info: "400x / Unstained", chem_context: "Contamination" },
+            { id: "j14", image_file: "images/cystine_01.jpg", options: ["Cystine", "Cholesterol", "Triple Phos", "Uric Acid"], correct_index: 0, question: "【400x】酸性尿，無色、六角形薄片。", explanation: "<strong>Cystine</strong>：六角形結晶。", stain_info: "400x / Unstained", chem_context: "pH: 5.0" },
+            { id: "j15", image_file: "images/trich_01.jpg", options: ["Trichomonas", "WBC", "Bacteria", "RTEC"], correct_index: 0, question: "【400x】常見寄生蟲，似白血球型態，具鞭毛，有游動性。", explanation: "<strong>Trichomonas</strong>：陰道滴蟲。", stain_info: "400x / Unstained", chem_context: "pH: 7.0" },
+            { id: "j16", image_file: "images/ca_carb.jpg", options: ["Calcium Carbonate", "Calcium Oxalate", "Triple Phosphate", "Uric Acid"], correct_index: 0, question: "【400x】出現於鹼性尿，有'8字型'形態或輻射狀小圓形態，加酸會產生CO2氣泡。", explanation: "<strong>Calcium carbonate</strong>：鹼性尿常見，特徵是啞鈴狀且遇酸產氣。", stain_info: "400x / Unstained", chem_context: "pH: 8.0 | Bubbles with acid" },
+            { id: "j17", image_file: "images/amorph_phos.jpg", options: ["Amorphous Phosphate", "Amorphous Urates", "Bacteria", "Mucus"], correct_index: 0, question: "【400x】尿液離心後有白色沉澱，鹼性尿中常見的不定形鹽類。", explanation: "<strong>Amorphous phosphate</strong>：鹼性尿中的無定形磷酸鹽，外觀為白色沉澱。", stain_info: "400x / Unstained", chem_context: "pH: 8.0 | White Sediment" },
+            { id: "j18", image_file: "images/amm_biurate.jpg", options: ["Ammonium Biurate", "Leucine", "Tyrosine", "Sulfonamide"], correct_index: 0, question: "【400x】鹼性尿結晶，呈刺蘋果'Thorn apple'狀，與尿液久置相關。", explanation: "<strong>Ammonium biurate</strong>：重尿酸銨，特徵性的刺蘋果外觀。", stain_info: "400x / Unstained", chem_context: "pH: 8.5 | Old Urine" },
+            { id: "j19", image_file: "images/leucine.jpg", options: ["Leucine", "Tyrosine", "Fat Droplet", "Starch"], correct_index: 0, question: "【400x】黃褐色油滴狀球體，具有明顯的同心圓條紋。", explanation: "<strong>Leucine</strong>：白胺酸結晶。見於嚴重肝病，常與 Tyrosine 並存。", stain_info: "400x / Unstained", chem_context: "pH: 5.5 | 嚴重肝病" },
+            { id: "j20", image_file: "images/tyrosine.jpg", options: ["Tyrosine", "Calcium Phosphate", "Bilirubin", "Uric Acid"], correct_index: 0, question: "【400x】無色或淡黃色細針狀，常聚集成束 (Sheaves) 或菊花狀。", explanation: "<strong>Tyrosine</strong>：酪胺酸結晶。細針束狀，見於嚴重肝病。", stain_info: "400x / Unstained", chem_context: "pH: 5.5 | Bilirubin: 3+" },
+            { id: "j21", image_file: "images/cholesterol.jpg", options: ["Cholesterol", "Cystine", "Triple Phosphate", "Radiographic Dye"], correct_index: 0, question: "【400x】無色、長方形薄片，角落有缺角 (Notched corners)，呈現階梯狀。", explanation: "<strong>Cholesterol</strong>：膽固醇結晶。特徵缺角長方板狀，見於腎病症候群。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | Protein: 4+ | Lipid: +" }
+        ];
 
-            // Crystals
-            { "id": "q11", "image_file": "images/q11_caox.jpg", "question": "【400x】酸性尿，折光性強，呈現「信封狀 (Envelope)」結晶。", "options": ["Uric Acid", "Calcium Oxalate", "Triple Phosphate", "Cholesterol"], "correct_index": 1, "explanation": "<strong>Calcium Oxalate</strong>：雙水型草酸鈣，典型為八面體（十字光芒狀）。" },
-            { "id": "q12", "image_file": "images/q12_triple_phos.jpg", "question": "【400x】鹼性尿，呈現「棺材蓋狀 (Coffin-lid)」長方形結晶。", "options": ["Triple Phosphate", "Calcium Carbonate", "Cystine", "Tyrosine"], "correct_index": 0, "explanation": "<strong>Triple Phosphate</strong>：磷酸銨鎂，鹼性尿中最常見的結晶。" },
-            { "id": "q13", "image_file": "images/q13_uric_acid.jpg", "question": "【400x】酸性尿，黃褐色，形狀多變（菱形、花狀），偏光下七彩。", "options": ["Bilirubin", "Cystine", "Uric Acid", "Leucine"], "correct_index": 2, "explanation": "<strong>Uric Acid</strong>：形狀多變，但顏色多為黃褐/紅磚色。痛風患者常見。" },
-            { "id": "q14", "image_file": "images/q14_amorph_urates.jpg", "question": "【400x】酸性尿，肉眼看沈澱物呈粉紅色 (Brick dust)，鏡下為黃色細沙狀。", "options": ["Amorphous Phosphates", "Amorphous Urates", "Bacteria", "Yeast"], "correct_index": 1, "explanation": "<strong>Amorphous Urates</strong>：酸性尿中的無定形尿酸鹽，加熱或加鹼後會溶解。" },
-            { "id": "q15", "image_file": "images/q15_amorph_phos.jpg", "question": "【400x】鹼性尿，肉眼看沈澱物呈白色，鏡下為無色細顆粒。", "options": ["Amorphous Phosphates", "Amorphous Urates", "Calcium Carbonate", "Bacteria"], "correct_index": 0, "explanation": "<strong>Amorphous Phosphates</strong>：鹼性尿中的無定形磷酸鹽，加酸後溶解。" },
-            { "id": "q16", "image_file": "images/q16_ca_carb.jpg", "question": "【400x】鹼性尿，輻射小球狀或啞鈴狀 (Dumbbell)，加酸會產生氣泡。", "options": ["Calcium Oxalate", "Calcium Carbonate", "Starch", "Ammonium Biurate"], "correct_index": 1, "explanation": "<strong>Calcium Carbonate</strong>：碳酸鈣。特徵是8字形、啞鈴狀或輻射小球狀且加酸會產氣 (CO2)。" },
-            { "id": "q17", "image_file": "images/q17_amm_biurate.jpg", "question": "【400x】鹼性尿，黃褐色，球狀且表面有棘刺，外觀像「刺蘋果 (Thorny apple)」。", "options": ["Leucine", "Tyrosine", "Ammonium Biurate", "Sulfonamide"], "correct_index": 2, "explanation": "<strong>Ammonium Biurate</strong>：重尿酸銨。特徵性的黃褐色刺蘋果外觀，常見於陳舊尿液。" },
-            { "id": "q18", "image_file": "images/q18_ca_phos.jpg", "question": "【400x】鹼性尿，無色，呈長稜柱狀、針狀或排列成星狀 (Rosette)。", "options": ["Triple Phosphate", "Calcium Phosphate", "Tyrosine", "Ampicillin"], "correct_index": 1, "explanation": "<strong>Calcium Phosphate</strong>：磷酸鈣。外型多變，常呈現楔形稜柱或不規則片狀。" },
-            { "id": "q19", "image_file": "images/q19_cystine.jpg", "question": "【400x】酸性尿，無色、六角形 (Hexagonal) 薄片，具層疊感。", "options": ["Cholesterol", "Triple Phosphate", "Uric Acid", "Cystine"], "correct_index": 3, "explanation": "<strong>Cystine</strong>：胱胺酸(cystine)。代謝異常疾病，六角形結晶是診斷關鍵。" },
-            { "id": "q20", "image_file": "images/q20_leucine.jpg", "question": "【400x】黃褐色油滴狀球體，具有明顯的同心圓或輻射狀條紋。", "options": ["Tyrosine", "Leucine", "Fat Droplets", "Starch"], "correct_index": 1, "explanation": "<strong>Leucine</strong>：白胺酸(Leucine)。通常與 Tyrosine 同時出現，見於嚴重肝病。" },
-            { "id": "q21", "image_file": "images/q21_tyrosine.jpg", "question": "【400x】酸性尿，無色或淡黃色細針狀，常聚集成束 (Sheaves) 或菊花狀。", "options": ["Bilirubin", "Tyrosine", "Ampicillin", "Calcium Phosphate"], "correct_index": 1, "explanation": "<strong>Tyrosine</strong>：酪胺酸。細針狀聚集，見於嚴重肝臟壞死或酪胺酸血症。" },
-            { "id": "q22", "image_file": "images/q22_cholesterol.jpg", "question": "【400x】無色、長方形薄片，角落有缺角 (Notched corners)，呈現階梯狀。", "options": ["Cystine", "Triple Phosphate", "Cholesterol", "Radiographic Dye"], "correct_index": 2, "explanation": "<strong>Cholesterol</strong>：膽固醇結晶。特徵是缺角長方板狀，常伴隨脂肪圓柱體，見於腎病症候群。" },
-
-            // Casts
-            { "id": "q23", "image_file": "images/q23_hyaline.jpg", "question": "【400x】非常透明、兩側平行、折光性低，需減弱光線觀察。", "options": ["Granular Cast", "Waxy Cast", "Hyaline Cast", "Fatty Cast"], "correct_index": 2, "explanation": "<strong>Hyaline Cast</strong>：透明圓柱體。由 Tamm-Horsfall 蛋白組成，正常人運動後可見。" },
-            { "id": "q24", "image_file": "images/q24_granular.jpg", "question": "【400x】圓柱體基質內充滿粗大或細小顆粒，外型如雪茄。", "options": ["WBC Cast", "Granular Cast", "RBC Cast", "Broad Cast"], "correct_index": 1, "explanation": "<strong>Granular Cast</strong>：顆粒圓柱體。顆粒來自細胞崩解，代表腎臟實質病變。" },
-            { "id": "q25", "image_file": "images/q25_waxy.jpg", "question": "【400x】折光性強，邊緣有裂痕 (Cracks)，質地像融化的蠟，末端平整。", "options": ["Hyaline Cast", "Broad Cast", "Waxy Cast", "RBC Cast"], "correct_index": 2, "explanation": "<strong>Waxy Cast</strong>：臘狀圓柱體。代表尿液滯留極久，提示嚴重慢性腎衰竭。" }
+        // --- 2. ADVANCED POOL ---
+        const advancedPool = [
+            { id: "rbc_ghost", image_file: "images/rbc_ghost.jpg", options: ["RBC Ghost Cell", "Yeast", "Air Bubble", "WBC"], correct_index: 0, question: "【400x】低比重尿液中，細胞脹破、流失 Hb，呈現無色狀的鬼影細胞。", explanation: "<strong>RBC ghost cell</strong>：低滲透壓尿液中，RBC 溶血後剩下的細胞膜空殼。", stain_info: "400x / Unstained", chem_context: "pH: 7.0 | SG: 1.003 | OB: 2+" },
+            { id: "sq_mid", image_file: "images/sq_mid.jpg", options: ["Deep Squamous Epi", "Middle Squamous Epi", "RTEC", "WBC"], correct_index: 1, question: "【400x】【紅色箭頭處】細胞核約白血球大小、置中或微偏心，細胞質些許斑點狀，細胞型態不規則。", explanation: "<strong>中層 Squamous epithelial cells</strong>：來自上皮中層，核質比略大於表層細胞。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | Epithelial: ++" },
+            { id: "sq_deep", image_file: "images/sq_deep.jpg", options: ["Middle Squamous Epi", "Deep Squamous Epi", "Urothelial Cell", "RTEC"], correct_index: 1, question: "【400x】細胞核約白血球大小、置中或微偏心，細胞質些許斑點狀，細胞呈圓卵形。", explanation: "<strong>深層 Squamous epithelial cells</strong>：又稱基底層細胞，較圓，少見，需與移行上皮區分。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | LE: -" },
+            { id: "urothelial", image_file: "images/urothelial.jpg", options: ["Squamous Epi", "Urothelial Cell", "RTEC", "WBC"], correct_index: 1, question: "【400x】梨形、菱角形或傘狀，細胞核約 1.5 倍 WBC 大，多核，細胞質凹凸明顯，成龜甲或馬賽克狀。", explanation: "<strong>Urothelial cell (Transitional)</strong>：來自腎盂至膀胱段，大量出現可能與導尿或發炎有關。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | Nitrite: -" },
+            { id: "rtec", image_file: "images/rtec.jpg", options: ["WBC", "RTEC", "Urothelial Cell", "Squamous Epi"], correct_index: 1, question: "【400x】細胞核約 RBC 大小、極偏心，細胞質顆粒多、透明度差，最常見鋸齒型。", explanation: "<strong>Renal tubular epithelial cell (RTEC)</strong>：來自腎小管，提示腎小管壞死 (ATN)。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | Protein: 2+ | Glucose: -" },
+            { id: "oval_fat", image_file: "images/oval_fat.jpg", options: ["RTEC", "Oval Fat Body", "WBC", "RBC"], correct_index: 1, question: "【400x】細胞呈圓形，胞內有明顯脂質油滴 (脂肪化的 RTEC 或巨噬細胞)。", explanation: "<strong>Oval fat body</strong>：常見於腎病症候群 (Nephrotic syndrome)，偏光下可能有馬耳他十字。", stain_info: "400x / Unstained", chem_context: "pH: 6.5 | Protein: 4+ | Lipid: +" },
+            { id: "rtec_cast", image_file: "images/rtec_cast.jpg", options: ["Granular Cast", "RTEC Cast", "WBC Cast", "Cellular Cast"], correct_index: 1, question: "【400x】Cast 含有 3 個以上的 RTEC。", explanation: "<strong>RTEC cast</strong>：圓柱體內包含腎小管上皮細胞，提示腎小管嚴重損傷。", stain_info: "400x / Low Light", chem_context: "pH: 5.5 | Protein: 2+" },
+            { id: "rbc_cast", image_file: "images/rbc_cast.jpg", options: ["Heme Cast", "RBC Cast", "Granular Cast", "Waxy Cast"], correct_index: 1, question: "【400x】Cast 含有 3 個以上的 RBC。", explanation: "<strong>RBC cast</strong>：圓柱體內包埋紅血球，為腎絲球腎炎 (Glomerulonephritis) 的指標。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | OB: 3+ | Protein: 2+" },
+            { id: "wbc_cast", image_file: "images/wbc_cast.jpg", options: ["RTEC Cast", "WBC Cast", "Granular Cast", "Bacterial Cast"], correct_index: 1, question: "【400x】Cast 含有 3 個以上的 WBC。", explanation: "<strong>WBC cast</strong>：圓柱體內包埋白血球，強烈提示腎盂腎炎 (Pyelonephritis)。", stain_info: "400x / Unstained", chem_context: "pH: 6.5 | LE: 3+ | Protein: 1+" },
+            { id: "waxy_cast", image_file: "images/waxy_cast.jpg", options: ["Hyaline Cast", "Waxy Cast", "Granular Cast", "Broad Cast"], correct_index: 1, question: "【400x】邊緣清楚、具斷裂紋、過度脫水成蠟狀樣圓柱體。", explanation: "<strong>Waxy cast</strong>：腎衰竭圓柱體，提示尿液滯留極久。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | Protein: 3+ | SG: Fixed" },
+            { id: "fatty_cast", image_file: "images/fatty_cast.jpg", options: ["Granular Cast", "Fatty Cast", "Hyaline Cast", "Waxy Cast"], correct_index: 1, question: "【400x】包有脂質油滴的 cast，偏光顯微鏡可見馬耳他十字特徵。", explanation: "<strong>Fatty cast</strong>：脂肪圓柱體，常見於腎病症候群。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | Protein: 4+" },
+            { id: "bili_crys", image_file: "images/bili_crys.jpg", options: ["Uric Acid", "Bilirubin Crystal", "Tyrosine", "Leucine"], correct_index: 1, question: "【400x】尿液震盪後具有黃色泡沫，結晶黃色、外型似刺果或蒲公英種子的冠毛。", explanation: "<strong>Bilirubin crystal</strong>：出現於嚴重肝病阻塞性黃疸。", stain_info: "400x / Unstained", chem_context: "pH: 5.5 | Bilirubin: 3+ | Foam: Yellow" },
+            { id: "caox_di", image_file: "images/caox_di.jpg", options: ["Calcium Oxalate Monohydrate", "Calcium Oxalate Dihydrate", "Triple Phosphate", "Uric Acid"], correct_index: 1, question: "【400x】八面體、似短版西式信封，具十字光芒狀。", explanation: "<strong>Calcium oxalate dihydrate</strong>：雙水草酸鈣，最常見的結晶之一。", stain_info: "400x / Unstained", chem_context: "pH: 6.0 | Clear Urine" },
+            { id: "caox_mono", image_file: "images/caox_mono.jpg", options: ["Calcium Oxalate Monohydrate", "Calcium Oxalate Dihydrate", "RBC", "Yeast"], correct_index: 0, question: "【400x】結晶呈卵圓形或啞鈴型。", explanation: "<strong>Calcium oxalate monohydrate</strong>：單水草酸鈣，易與 RBC或Ca. carbonate 混淆。", stain_info: "400x / Unstained", chem_context: "pH: 6.0" },
+            { id: "cap_col", image_file: "images/cap_col.jpg", options: ["Triple Phosphate", "Calcium Phosphate (Columnar)", "Tyrosine", "Ampicillin"], correct_index: 1, question: "【400x】常見細長稜柱狀，鹼性尿可見，與泌尿道感染結石有關。", explanation: "<strong>Calcium phosphate (Columnar)</strong>：柱狀磷酸鈣。", stain_info: "400x / Unstained", chem_context: "pH: 7.5 | Nitrite: +" },
+            { id: "cap_plate", image_file: "images/cap_plate.jpg", options: ["Cholesterol", "Calcium Phosphate (Plate)", "Cystine", "Uric Acid"], correct_index: 1, question: "【100x】片狀型態的結晶，鹼性尿可見，與泌尿道感染結石有關。", explanation: "<strong>Calcium phosphate (Plate)</strong>：片狀磷酸鈣，需與 Squamous Epi 區分。", stain_info: "400x / Unstained", chem_context: "pH: 8.0" },
+            { id: "trip_prism", image_file: "images/trip_prism.jpg", options: ["Ca Phos", "Triple Phosphate (Prism)", "Ca Carbonate", "Calcium Oxalate"], correct_index: 1, question: "【400x】鹼性尿可見，稜柱狀型態 (Prism form)。", explanation: "<strong>Triple phosphate (Prism)</strong>：磷酸銨鎂，常見於感染尿。", stain_info: "400x / Unstained", chem_context: "pH: 8.5 | Nitrite: +" },
+            { id: "trip_coffin", image_file: "images/trip_coffin.jpg", options: ["Calcium Oxalate", "Triple Phosphate (Coffin-lid)", "Uric Acid", "Cholesterol"], correct_index: 1, question: "【400x】鹼性尿可見，常見長版西式信封狀或棺材蓋板型，結晶溶解後呈蝴蝶翅膀型態。", explanation: "<strong>Triple phosphate (Coffin-lid)</strong>：棺材蓋狀磷酸銨鎂。", stain_info: "400x / Unstained", chem_context: "pH: 8.0" },
+            { id: "uric_acid", image_file: "images/uric_acid.jpg", options: ["Cystine", "Uric Acid", "Bilirubin", "Calcium Oxalate"], correct_index: 1, question: "【400x】酸性尿可見，型態多種，有桶形、菱形、葉片形及柱形等，結晶顏色偏黃。", explanation: "<strong>Uric Acid</strong>：尿酸結晶，痛風患者常見。", stain_info: "400x / Unstained", chem_context: "pH: 5.0" },
+            { id: "fungus_yeast", image_file: "images/fungus_yeast.jpg", options: ["RBC", "Fungus (Yeast-like)", "Fungus (Mold-like)", "Bacteria"], correct_index: 1, question: "【400x】具出芽狀，型態似 RBC，加稀釋醋酸不被溶解。", explanation: "<strong>Fungus Yeast-like</strong>：類酵母菌 (Candida sp.)，糖尿病常見。", stain_info: "400x / Unstained", chem_context: "pH: 5.5 | Glucose: 3+" },
+            { id: "fungus_mold", image_file: "images/fungus_mold.jpg", options: ["Mucus", "Fiber", "Fungus (Mold-like)", "Yeast-like"], correct_index: 2, question: "【400x】黴菌菌絲體，具有中隔的菌絲非常明顯。", explanation: "<strong>Fungus mold-like</strong>：黴菌菌絲，常見於免疫抑制患者。", stain_info: "400x / Unstained", chem_context: "pH: 6.0" },
+            { id: "trich", image_file: "images/trich.jpg", options: ["WBC", "Trichomonas", "Bacteria", "RTEC"], correct_index: 1, question: "【400x】最常見的尿沉渣寄生蟲，似白血球型態，具鞭毛。新鮮尿液可見明顯游動。", explanation: "<strong>Trichomonas</strong>：陰道滴蟲。", stain_info: "400x / Unstained", chem_context: "pH: 7.0 | Leukocyte Esterase: 2+" },
+            { id: "fiber", image_file: "images/fiber.jpg", options: ["Hyaline Cast", "Mucus", "Artificial Fibers", "Waxy Cast"], correct_index: 2, question: "【400x】人造纖維，屬尿沉渣雜質成分。", explanation: "<strong>Artificial fibers</strong>：來自衣物或衛生紙的纖維，折光性強，邊緣平整。", stain_info: "400x / Unstained", chem_context: "Sample Contaminated?" }
         ];
 
         // --- GAME LOGIC ---
+        let currentMode = 'junior'; 
+        let questionsToPlay = 10;
         let currentGameQuestions = [];
         let currentIdx = 0;
         let score = 0;
         let answered = false;
-        const questionsPerGame = 10;
-        const scorePerQuestion = 10;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('btn-start').addEventListener('click', startGame);
-        });
 
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => {
@@ -247,14 +333,40 @@
             return array;
         }
 
-        function startGame() {
-            // Pick 10 random questions
-            const poolCopy = [...questionPool];
-            currentGameQuestions = shuffleArray(poolCopy).slice(0, questionsPerGame);
-            
-            currentIdx = 0;
+        function startGame(mode) {
+            currentMode = mode;
             score = 0;
+            currentIdx = 0;
             answered = false;
+
+            const root = document.documentElement;
+            const badge = document.getElementById('mode-badge');
+            
+            if (mode === 'junior') {
+                questionsToPlay = juniorPool.length; 
+                root.style.setProperty('--primary-color', '#28a745');
+                badge.innerText = "Junior (All 21)";
+                badge.style.background = "#28a745";
+                currentGameQuestions = shuffleArray([...juniorPool]);
+
+            } else if (mode === 'advanced') {
+                questionsToPlay = 20;
+                root.style.setProperty('--primary-color', '#d63384');
+                badge.innerText = "Advanced (Pure 20)";
+                badge.style.background = "#d63384";
+                const safeCount = Math.min(advancedPool.length, 20);
+                questionsToPlay = safeCount;
+                currentGameQuestions = shuffleArray([...advancedPool]).slice(0, questionsToPlay);
+
+            } else { 
+                questionsToPlay = 15;
+                root.style.setProperty('--primary-color', '#e67e22');
+                badge.innerText = "Quiz (Mixed 15)";
+                badge.style.background = "#e67e22";
+                const fullPool = [...juniorPool, ...advancedPool];
+                currentGameQuestions = shuffleArray(fullPool).slice(0, questionsToPlay);
+            }
+
             document.getElementById('score-text').innerText = "Score: 0";
             switchScreen('game-interface');
             loadQuestion();
@@ -264,77 +376,96 @@
             answered = false;
             const q = currentGameQuestions[currentIdx];
             
-            // Progress
-            document.getElementById('progress-text').innerText = `Question ${currentIdx + 1} / ${questionsPerGame}`;
-            document.getElementById('progress-bar').style.width = ((currentIdx) / questionsPerGame) * 100 + "%";
+            document.getElementById('progress-text').innerText = `Q ${currentIdx + 1} / ${questionsToPlay}`;
+            const pct = ((currentIdx) / questionsToPlay) * 100;
+            document.getElementById('progress-bar').style.width = pct + "%";
             
-            // Image Handling
             const imgEl = document.getElementById('question-image');
             const errorMsg = document.getElementById('error-msg');
-            
-            // Reset image state
             imgEl.style.display = 'block'; 
             errorMsg.style.display = 'none';
-            imgEl.src = q.image_file; // Load the new image
-            
-            document.getElementById('question-text').innerText = q.question;
-            document.getElementById('missing-filename').innerText = q.image_file; // Helper for debugging
+            imgEl.src = q.image_file;
+            document.getElementById('missing-filename').innerText = q.image_file;
 
-            // Reset UI
+            const qText = document.getElementById('question-text');
+            if (currentMode === 'quiz') {
+                qText.innerHTML = `<div style="font-size:1.2rem; margin-bottom:5px;">${q.stain_info}</div><div class="lab-data-tag">${q.chem_context}</div>`;
+            } else {
+                qText.innerText = q.question;
+            }
+
             const feedback = document.getElementById('feedback-panel');
             feedback.style.display = 'none';
             feedback.className = 'feedback-panel';
             document.getElementById('next-btn').style.display = 'none';
 
-            // Options
+            let optionsWithStatus = q.options.map((opt, i) => ({
+                text: opt,
+                isCorrect: (i === q.correct_index)
+            }));
+            
+            optionsWithStatus = shuffleArray(optionsWithStatus);
+
             const container = document.getElementById('options-container');
             container.innerHTML = "";
-            q.options.forEach((opt, idx) => {
+            
+            optionsWithStatus.forEach((optData) => {
                 const btn = document.createElement("button");
                 btn.className = "option-btn";
-                btn.innerText = opt;
-                btn.onclick = () => handleAnswer(idx, btn);
+                btn.innerText = optData.text;
+                btn.dataset.isCorrect = optData.isCorrect;
+                btn.onclick = () => handleAnswer(optData.isCorrect, btn);
                 container.appendChild(btn);
             });
         }
 
-        // Called automatically if browser cannot find the image file
         function handleImageError(img) {
-            img.style.display = 'none'; // Hide broken image icon
-            document.getElementById('error-msg').style.display = 'block'; // Show helpful text
+            img.style.display = 'none';
+            document.getElementById('error-msg').style.display = 'block';
         }
 
-        function handleAnswer(selectedIdx, btnElement) {
+        function handleAnswer(isCorrect, btnElement) {
             if (answered) return;
             answered = true;
             const q = currentGameQuestions[currentIdx];
             const feedback = document.getElementById('feedback-panel');
             const allBtns = document.querySelectorAll('.option-btn');
-
             allBtns.forEach(b => b.disabled = true);
 
-            if (selectedIdx === q.correct_index) {
-                score += scorePerQuestion;
-                document.getElementById('score-text').innerText = `Score: ${score}`;
+            const pointsPerQ = 100 / questionsToPlay;
+
+            if (isCorrect) {
+                score += pointsPerQ;
+                document.getElementById('score-text').innerText = `Score: ${Math.round(score)}`;
                 btnElement.classList.add('correct');
                 feedback.classList.add('success');
-                feedback.innerHTML = "✅ <strong>Correct!</strong><br>" + q.explanation;
             } else {
                 btnElement.classList.add('wrong');
-                allBtns[q.correct_index].classList.add('correct');
+                allBtns.forEach(b => {
+                    if (b.dataset.isCorrect === "true") b.classList.add('correct');
+                });
                 feedback.classList.add('error');
-                feedback.innerHTML = "❌ <strong>Incorrect.</strong><br>" + q.explanation;
             }
+
+            const resultText = isCorrect ? "✅ Correct!" : "❌ Incorrect.";
+            const correctOptionText = q.options[q.correct_index];
+
+            if (currentMode === 'quiz') {
+                 feedback.innerHTML = `<strong>${resultText}</strong><br>Answer: ${correctOptionText}`;
+            } else {
+                 feedback.innerHTML = `<strong>${resultText}</strong><br>${q.explanation}`;
+            }
+
             feedback.style.display = 'block';
             
             const nextBtn = document.getElementById('next-btn');
             nextBtn.style.display = 'block';
-            nextBtn.innerText = (currentIdx === questionsPerGame - 1) ? "View Results 📊" : "Next Question ➔";
+            nextBtn.innerText = (currentIdx === questionsToPlay - 1) ? "View Results 📊" : "Next Question ➔";
         }
 
         function nextQuestion() {
             currentIdx++;
-            if (currentIdx < questionsPerGame) {
+            if (currentIdx < questionsToPlay) {
                 loadQuestion();
             } else {
                 showResult();
@@ -343,24 +474,39 @@
 
         function showResult() {
             switchScreen('result-screen');
-            document.getElementById('final-score').innerText = score;
-
             let rank, comment;
-            const maxScore = questionsPerGame * scorePerQuestion; 
-            if (score === maxScore) {
-                rank = "🏆 顯微鏡大師 (Master)"; comment = "Perfect! 運氣與實力兼具的完美表現！";
-            } else if (score >= 80) {
-                rank = "🔬 資深醫檢師 (Senior MT)"; comment = "Excellent! 臨床判讀能力非常值得信賴。";
-            } else if (score >= 60) {
-                rank = "🧪 資淺醫檢師 (Junior MT)"; comment = "Good. 通過考核，但在鑑別細節上要再細心一點。";
+            const finalScore = Math.round(score);
+            document.getElementById('final-score').innerText = finalScore;
+            
+            if (currentMode === 'junior') {
+                document.getElementById('result-title').innerText = "初級教練結算";
             } else {
-                rank = "🐣 菜鳥實習生 (Intern)"; comment = "Keep Practicing! 請重新挑戰，多累積經驗值。";
+                document.getElementById('result-title').innerText = (currentMode === 'quiz') ? "測驗模式結算" : "進階教練結算";
             }
+
+            if (finalScore >= 95) {
+                rank = "🏆 顯微鏡大師";
+                comment = "太強了！教科書等級的判讀能力！";
+            } else if (finalScore >= 80) {
+                rank = "🥈 資深醫檢師";
+                comment = "表現優異，已具備臨床判讀水準。";
+            } else if (finalScore >= 60) {
+                rank = "🥉 醫檢師";
+                comment = "及格通過，但建議再針對錯誤題目進行複習。";
+            } else {
+                rank = "🐣 實習生";
+                comment = "別氣餒，沉渣判讀需要經驗累積，多練習幾次！";
+            }
+
             document.getElementById('final-rank').innerText = rank;
             document.getElementById('final-comment').innerText = comment;
         }
 
-        function restartGame() { startGame(); }
+        function restartGame() { startGame(currentMode); }
+        function goHome() { 
+            document.documentElement.style.setProperty('--primary-color', '#0056b3');
+            switchScreen('start-screen'); 
+        }
     </script>
 </body>
 </html>
